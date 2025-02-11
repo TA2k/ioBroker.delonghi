@@ -1,0 +1,112 @@
+{
+  "common": {
+    "name": "delonghi",
+    "version": "0.0.1",
+    "news": {
+      "0.0.1": {
+        "en": "initial release",
+        "de": "Erstveröffentlichung",
+        "ru": "Начальная версия",
+        "pt": "lançamento inicial",
+        "nl": "Eerste uitgave",
+        "fr": "Première version",
+        "it": "Versione iniziale",
+        "es": "Versión inicial",
+        "pl": "Pierwsze wydanie",
+        "uk": "Початкова версія",
+        "zh-cn": "首次出版"
+      }
+    },
+    "titleLang": {
+      "en": "DeLonghi",
+      "de": "Delonghi",
+      "ru": "Делонги",
+      "pt": "Delonghi",
+      "nl": "Delonghi",
+      "fr": "Delonghi",
+      "it": "Delonghi",
+      "es": "Delonghi",
+      "pl": "Delonghi",
+      "uk": "Делонгій",
+      "zh-cn": "DeLonghi"
+    },
+    "desc": {
+      "en": "Adapter for DeLonghi",
+      "de": "Adapter für Delonghi",
+      "ru": "Адаптер для Делонги",
+      "pt": "Adaptador para Delonghi",
+      "nl": "Adapter voor Delonghi",
+      "fr": "Adaptateur pour Delonghi",
+      "it": "Adattatore per Delonghi",
+      "es": "Adaptador para delonghi",
+      "pl": "Adapter dla Delonghi",
+      "uk": "Адаптер для Делонгій",
+      "zh-cn": "Delonghi的适配器"
+    },
+    "authors": ["TA2k <tombox2020@gmail.com>"],
+    "keywords": ["delonghi"],
+    "licenseInformation": {
+      "type": "free",
+      "license": "MIT"
+    },
+    "platform": "Javascript/Node.js",
+    "icon": "delonghi.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/TA2k/ioBroker.delonghi/main/admin/delonghi.png",
+    "readme": "https://github.com/TA2k/ioBroker.delonghi/blob/main/README.md",
+    "loglevel": "info",
+    "tier": 3,
+    "mode": "daemon",
+    "type": "household",
+    "compact": true,
+    "connectionType": "cloud",
+    "dataSource": "poll",
+    "adminUI": {
+      "config": "json"
+    },
+    "plugins": {
+      "sentry": {
+        "dsn": "https://c9bd6c851b1246da95e6e982aa9b88f3@sentry.iobroker.net/152"
+      }
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=7.0.4"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": "7.0.23"
+      }
+    ]
+  },
+  "native": {
+    "username": "",
+    "password": "",
+    "interval": 10
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "Device or service connected",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    }
+  ]
+}
