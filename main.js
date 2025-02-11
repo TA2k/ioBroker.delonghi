@@ -50,23 +50,17 @@ class Delonghi extends utils.Adapter {
     await this.getDevices();
     await this.updateDevices();
 
-    this.updateInterval = setInterval(
-      async () => {
-        await this.updateDevices();
-      },
-      this.config.interval * 60 * 1000,
-    );
+    this.updateInterval = setInterval(async () => {
+      await this.updateDevices();
+    }, this.config.interval * 60 * 1000);
 
     //every 1 week
-    this.refreshTokenInterval = setInterval(
-      async () => {
-        await this.getDevices();
-      },
-      1000 * 60 * 60 * 24 * 7,
-    );
+    this.refreshTokenInterval = setInterval(async () => {
+      await this.getDevices();
+    }, 1000 * 60 * 60 * 24 * 7);
   }
   async login() {
-    const sessionInfo = this.requestClient({
+    const sessionInfo = await this.requestClient({
       method: 'post',
       maxBodyLength: Infinity,
       url: 'https://accounts.eu1.gigya.com/accounts.login',
@@ -103,7 +97,7 @@ class Delonghi extends utils.Adapter {
         apiKey: '3_e5qn7USZK-QtsIso1wCelqUKAK_IVEsYshRIssQ-X-k55haiZXmKWDHDRul2e5Y2',
         expiration: '7776000',
         httpStatusCodes: 'true',
-        secret: sessionInfo.secret,
+        secret: sessionInfo.sessionSecret,
       },
       headers: {
         accept: '*/*',
@@ -119,6 +113,7 @@ class Delonghi extends utils.Adapter {
         this.id_token = res.data.id_token;
       })
       .catch((error) => {
+        this.log.error('Login failed first step');
         this.log.error(error);
         error.response && this.log.error(JSON.stringify(error.response.data));
       });
@@ -223,7 +218,7 @@ class Delonghi extends utils.Adapter {
 
   async updateDevices() {
     for (const deviceId of this.deviceArray) {
-      this.requestClient({
+      await this.requestClient({
         method: 'get',
         maxBodyLength: Infinity,
         url: 'https://ads-eu.aylanetworks.com/apiv1/dsns/' + deviceId + '/properties.json',
@@ -236,12 +231,30 @@ class Delonghi extends utils.Adapter {
       })
         .then(async (res) => {
           this.log.debug(JSON.stringify(res.data));
-          this.json2iob.parse(deviceId + '.status', res.data, { forceIndex: true, channelName: 'Status' });
+          this.replacepropertyTagWithChildren(res.data);
+          await this.json2iob.parse(deviceId + '.status', res.data, {
+            preferedArrayName: 'name',
+            channelName: 'Status',
+            parseBase64byIdsToHex: ['value'],
+          });
         })
         .catch((error) => {
           this.log.error(error);
           error.response && this.log.error(JSON.stringify(error.response.data));
         });
+    }
+  }
+  replacepropertyTagWithChildren(json) {
+    //replace attributes tag with children
+    for (const key in json) {
+      if (key === 'property') {
+        for (const attribute in json[key]) {
+          json[attribute] = json[key][attribute];
+        }
+        delete json[key];
+      } else if (typeof json[key] === 'object') {
+        this.replacepropertyTagWithChildren(json[key]);
+      }
     }
   }
   async refreshToken() {
